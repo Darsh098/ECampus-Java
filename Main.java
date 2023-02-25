@@ -1,16 +1,11 @@
-import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
-public class Main
-{
-    public static void main(String[] args)
-    {
+public class Main {
+    public static void main(String[] args) {
         int choice;
         Scanner sc = new Scanner(System.in);
         UserHelper obj = new UserHelper();
-        while(true)
-        {
+        while (true) {
             System.out.println("\n=============================");
             System.out.println("********* E Campus *********");
             System.out.println("=============================");
@@ -18,9 +13,8 @@ public class Main
             System.out.println("2. Sign In ");
             System.out.println("0. Exit");
             System.out.println("Enter Your Choice: ");
-            choice=sc.nextInt();
-            switch (choice)
-            {
+            choice = sc.nextInt();
+            switch (choice) {
                 case 1:
                     obj.RegisterUser();
                     break;
