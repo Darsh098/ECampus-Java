@@ -1,36 +1,52 @@
-public class User {
-    private String fullname;
+// Class to represent a user in a system
+public class User
+{
+    private String fullName;
     private String username;
     private String password;
 
-    public User(String fullname,String username,String password)
+
+    // Constructor to initialize the full name, username, and password of the user
+    public User(String fullName, String username, String password)
     {
-        this.fullname=fullname;
-        this.username=username;
-        this.password=password;
+        this.fullName = fullName;
+        this.username = username;
+        this.password = password;
     }
-    public  String getFullname()
+
+    // Getter method to return the full name of the user
+    public String getFullName()
     {
-        return fullname;
+        return fullName;
     }
-    public void setFullname()
+
+    // Setter method to set the full name of the user
+    public void setFullName(String fullName)
     {
-        this.fullname=fullname;
+        this.fullName = fullName;
     }
+
+    // Getter method to return the username of the user
     public String getUsername()
     {
         return username;
     }
-    public void setUsername()
+
+    // Setter method to set the username of the user
+    public void setUsername(String username)
     {
-        this.username=username;
+        this.username = username;
     }
+
+    // Getter method to return the password of the user
     public String getPassword()
     {
         return password;
     }
-    public  void setPassword(String password)
+
+    // Setter method to set the password of the user
+    public void setPassword(String password)
     {
-        this.password=password;
+        this.password = password;
     }
 }
