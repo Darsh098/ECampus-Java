@@ -135,7 +135,10 @@ public class UserHelper {
         // While Loop For Username
         sc.nextLine();
         while (true) {
-            System.out.println("\nEnter Your Username - ");
+            if (choice == 1)
+                System.out.println("\nEnter Your Username - ");
+            else
+                System.out.println("\nEnter Your Student Id - ");
             username = sc.nextLine();
 
             if (username.length() == 0) {
@@ -168,7 +171,7 @@ public class UserHelper {
                 if (u.getStudents().size() == 0)
                     CourseRegistration(u);
                 else
-                    FacultyMenu();
+                    FacultyMenu(u);
             } else {
                 System.out.println("\nIncorrect Password");
                 while (true) {
@@ -376,13 +379,125 @@ public class UserHelper {
         }
     }
 
-    void FacultyMenu() {
-        System.out.println("\n====");
-        System.out.println("Menu");
-        System.out.println("====");
+    void ViewStudentMarks(Faculty fac) {
+        System.out.println("Student ID\tStudent Name\tObt. Marks\tTotal Marks");
+        for (Student stud : fac.getStudents()) {
+            for (CourseScore CS : stud.getScoreCard().getCourseScores()) {
+                if (CS.getCourse().equals(fac.getCourse())) {
+                    System.out.println(stud.getUsername() + "\t" + stud.getFullName());
+                    System.out.print("\t" + CS.getObtainedMarks() + "\t" + CS.getCourse().getTotalMarks());
+                }
+            }
+        }
+    }
 
-        System.out.println("\n1. Manage Students Marks");
-        System.out.println("2. Manage Students");
+    void DisplayStudents(Faculty fac) {
+        System.out.println("\n===============");
+        System.out.println("Student Details");
+        System.out.println("===============");
+        System.out.println("\n---------------------------");
+        System.out.println("Student Id\tStudent Name");
+        System.out.println("---------------------------");
+        for (Student stud : fac.getStudents()) {
+            System.out.println(stud.getUsername() + "\t" + stud.getFullName());
+            System.out.println("---------------------------");
+        }
+    }
+
+    char CalculateGrade(float Percentage, Course course) {
+        float passingCriteria = course.getPassingCriteria();
+        float remainingCriteria = 100 - passingCriteria;
+        float gradeA = 100 - (remainingCriteria / 3);
+        float gradeB = 100 - (remainingCriteria / 3) * 2;
+        float gradeC = 100 - remainingCriteria;
+
+        if (Percentage <= 100 && Percentage > gradeA)
+            return 'A';
+        else if (Percentage <= gradeA && Percentage > gradeB)
+            return 'B';
+        else if (Percentage <= gradeB && Percentage > gradeC)
+            return 'C';
+        else
+            return 'F';
+    }
+
+    int CalculateCredit(char grade, Course course) {
+        if (grade == 'F')
+            return 0;
+        else
+            return course.getCredits();
+    }
+
+    void AddStudentMarks(Faculty fac) {
+        DisplayStudents(fac);
+
+        String studid;
+        int obtainedMarks;
+        System.out.println("Enter Student Id - ");
+        studid = sc.nextLine();
+        sc.nextLine();
+
+        System.out.println("Enter Obtained Marks : ");
+        obtainedMarks = sc.nextInt();
+
+        float Percentage = (obtainedMarks * 100) / (float) (fac.getCourse().getTotalMarks());
+
+        char grade = CalculateGrade(Percentage, fac.getCourse());
+        CourseScore CS = new CourseScore(fac.getCourse(), obtainedMarks, grade,
+                CalculateCredit(grade, fac.getCourse()));
+
+        for (Student stud : fac.getStudents()) {
+            if (studid.equals(stud.getUsername())) {
+                stud.getScoreCard().addCourseScore(CS);
+                break;
+            }
+        }
+    }
+
+    void FacultyMenu(Faculty fac) {
+        int choice;
+
+        while (true) {
+            System.out.println("\n====");
+            System.out.println("Menu");
+            System.out.println("====");
+
+            System.out.println("\n1. Add Students Marks");
+            System.out.println("2. View Students Marks");
+            System.out.println("3. Update Students Marks");
+            System.out.println("4. Add Students");
+            System.out.println("5. Delete Students");
+            System.out.println("6. Display Students");
+            System.out.println("0. Exit");
+
+            choice = sc.nextInt();
+            switch (choice) {
+                case 1:
+                    AddStudentMarks(fac);
+                    break;
+                case 2:
+                    ViewStudentMarks(fac);
+                    break;
+                case 3:
+                    // ViewStudentMarks();
+                    break;
+                case 4:
+                    // ViewStudentMarks();
+                    break;
+                case 5:
+                    // ViewStudentMarks();
+                    break;
+                case 6:
+                    DisplayStudents(fac);
+                    break;
+                case 0:
+                    return;
+                default:
+                    System.out.println("Invalid Selection :");
+                    break;
+            }
+        }
+
     }
 
     void ViewStudentDetails(Student stud) {
@@ -402,9 +517,13 @@ public class UserHelper {
         System.out.println("Courses");
         System.out.println("=======");
 
-        System.out.println("Course Id\tCourse Name");
-        for (Course course : stud.getCourses()) {
-            System.out.println(course.getCourseId() + "\t\t" + course.getCourseName());
+        if (stud.getCourses().size() > 0) {
+            System.out.println("Course Id\tCourse Name");
+            for (Course course : stud.getCourses()) {
+                System.out.println(course.getCourseId() + "\t\t" + course.getCourseName());
+            }
+        } else {
+            System.out.println("Student Is Not Registered In Any Courses...");
         }
     }
 }

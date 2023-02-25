@@ -1,10 +1,10 @@
 public class CourseScore {
     private Course course;
     private int obtainedMarks;
-    private String grade;
+    private char grade;
     private int attainedCredits;
 
-    public CourseScore(Course course, int obtainedMarks, String grade, int attainedCredits) {
+    public CourseScore(Course course, int obtainedMarks, char grade, int attainedCredits) {
         this.course = course;
         this.obtainedMarks = obtainedMarks;
         this.grade = grade;
@@ -26,11 +26,11 @@ public class CourseScore {
         this.obtainedMarks = obtainedMarks;
     }
 
-    public String getGrade() {
+    public char getGrade() {
         return grade;
     }
 
-    public void setGrade(String grade) {
+    public void setGrade(char grade) {
         this.grade = grade;
     }
 
