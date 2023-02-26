@@ -170,8 +170,7 @@ public class UserHelper {
 
                 if (u.getStudents().size() == 0)
                     CourseRegistration(u);
-                else
-                    FacultyMenu(u);
+                FacultyMenu(u);
             } else {
                 System.out.println("\nIncorrect Password");
                 while (true) {
@@ -380,12 +379,13 @@ public class UserHelper {
     }
 
     void ViewStudentMarks(Faculty fac) {
-        System.out.println("Student ID\tStudent Name\tObt. Marks\tTotal Marks");
+        System.out.println("Student ID\tStudent Name\tObt. Marks\tTotal Marks\tGrade");
         for (Student stud : fac.getStudents()) {
             for (CourseScore CS : stud.getScoreCard().getCourseScores()) {
                 if (CS.getCourse().equals(fac.getCourse())) {
-                    System.out.println(stud.getUsername() + "\t" + stud.getFullName());
-                    System.out.print("\t" + CS.getObtainedMarks() + "\t" + CS.getCourse().getTotalMarks());
+                    System.out.print(stud.getUsername() + "\t" + stud.getFullName());
+                    System.out.println("\t" + CS.getObtainedMarks() + "\t" + CS.getCourse().getTotalMarks() + "\t"
+                            + CS.getGrade());
                 }
             }
         }
@@ -433,9 +433,10 @@ public class UserHelper {
 
         String studid;
         int obtainedMarks;
+
+        sc.nextLine();
         System.out.println("Enter Student Id - ");
         studid = sc.nextLine();
-        sc.nextLine();
 
         System.out.println("Enter Obtained Marks : ");
         obtainedMarks = sc.nextInt();
@@ -458,9 +459,9 @@ public class UserHelper {
         int choice;
 
         while (true) {
-            System.out.println("\n====");
-            System.out.println("Menu");
-            System.out.println("====");
+            System.out.println("\n==============");
+            System.out.println("Faculty - Menu");
+            System.out.println("==============");
 
             System.out.println("\n1. Add Students Marks");
             System.out.println("2. View Students Marks");
@@ -470,6 +471,7 @@ public class UserHelper {
             System.out.println("6. Display Students");
             System.out.println("0. Exit");
 
+            System.out.println("Enter Your Choice : ");
             choice = sc.nextInt();
             switch (choice) {
                 case 1:
