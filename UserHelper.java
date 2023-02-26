@@ -21,6 +21,7 @@ public class UserHelper {
         System.out.println("2. Student");
         System.out.println("0. Home");
 
+
         System.out.println("Enter Your Choice : ");
         choice = sc.nextInt();
 
@@ -505,7 +506,7 @@ public class UserHelper {
 
         for(int i=0; i<student.size(); i++)
         {
-            for(int j=1; i<student.size()-i; j++)
+            for(int j=1; j<student.size()-i; j++)
             {
                 if (student.get(j-1).getScoreCard().getOverallpercentage() < student.get(j).getScoreCard().getOverallpercentage())
                 {
@@ -528,7 +529,7 @@ public class UserHelper {
         for (Student s : fac.getStudents())
         {
             int rank = getRank(fac,s);
-            float perc = ((fac.getStudents().size() - rank)/fac.getStudents().size())*100;
+            float perc = ((float)(fac.getStudents().size() - rank)/(float)fac.getStudents().size())*100;
             s.getScoreCard().setPercentile(perc);
         }
     }
@@ -543,8 +544,8 @@ public class UserHelper {
             counter++;
             overallper += CS.getPercentage();
         }
-
         overallper = overallper/counter;
+        stud.getScoreCard().setOverallpercentage(overallper);
 
         if(overallper<=100 && overallper>=80)
         {
@@ -815,6 +816,24 @@ public class UserHelper {
         {
             System.out.println("Student Is Not Registered In Any Courses...");
         }
+
+        System.out.println("\n===============");
+        System.out.println("     Marks     ");
+        System.out.println("===============");
+
+        System.out.println("Course Id\tCourse Name\tObt. Marks\tTotal Marks\tGrade\tCredits\tPercentage");
+        int overallcred=0;
+        for (CourseScore CS : stud.getScoreCard().getCourseScores())
+        {
+            System.out.println(CS.getCourse().getCourseId()+"\t\t"+CS.getCourse().getCourseName()+"\t\t"+CS.getObtainedMarks()+"\t\t"+
+            CS.getCourse().getTotalMarks()+"\t\t"+CS.getGrade()+"\t"+CS.getAttainedCredits()+"\t"+CS.getPercentage());
+
+            overallcred += CS.getAttainedCredits();
+        }
+
         System.out.println("Percentile : " + stud.getScoreCard().getPercentile());
+        System.out.println("Overall Percentage : " + stud.getScoreCard().getOverallpercentage());
+        System.out.println("Overall Grade : " + stud.getScoreCard().getOverallGrade());
+        System.out.println("Overall Credits : " + overallcred);
     }
 }
