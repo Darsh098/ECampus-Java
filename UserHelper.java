@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
@@ -497,9 +499,69 @@ public class UserHelper {
             return course.getCredits();
     }
 
-    void calculatePercentile(Faculty fac) {
+    int getRank(Faculty fac, Student stud)
+    {
         ArrayList<Student> student = fac.getStudents();
 
+        for(int i=0; i<student.size(); i++)
+        {
+            for(int j=1; i<student.size()-i; j++)
+            {
+                if (student.get(j-1).getScoreCard().getOverallpercentage() < student.get(j).getScoreCard().getOverallpercentage())
+                {
+                    Collections.swap(student, j-1, j );
+                }
+            }
+        }
+
+        int i=0;
+        for(Student s : student)
+        {
+            i++;
+            if(s==stud)
+                break;
+        }
+        return i;
+    }
+    void calculatePercentile(Faculty fac)
+    {
+        for (Student s : fac.getStudents())
+        {
+            int rank = getRank(fac,s);
+            float perc = ((fac.getStudents().size() - rank)/fac.getStudents().size())*100;
+            s.getScoreCard().setPercentile(perc);
+        }
+    }
+    void calculateOverallGrade(Student stud)
+    {
+        ScoreCard SC = stud.getScoreCard();
+        int counter=0;
+        float overallper=0;
+
+        for (CourseScore CS : SC.getCourseScores())
+        {
+            counter++;
+            overallper += CS.getPercentage();
+        }
+
+        overallper = overallper/counter;
+
+        if(overallper<=100 && overallper>=80)
+        {
+            SC.setOverallGrade('A');
+        }
+        else if (overallper<80 && overallper>=60)
+        {
+            SC.setOverallGrade('B');
+        }
+        else if(overallper<60 && overallper>=40)
+        {
+            SC.setOverallGrade('C');
+        }
+        else
+        {
+            SC.setOverallGrade('F');
+        }
     }
 
     void ViewStudetsWithoutMarks(Faculty fac) {
@@ -539,7 +601,8 @@ public class UserHelper {
 
     }
 
-    void AddStudentMarks(Faculty fac) {
+    void AddStudentMarks(Faculty fac)
+    {
         String studid;
         int obtainedMarks;
 
@@ -572,11 +635,15 @@ public class UserHelper {
 
             char grade = CalculateGrade(Percentage, fac.getCourse());
             CourseScore CS = new CourseScore(fac.getCourse(), obtainedMarks, grade,
-                    CalculateCredit(grade, fac.getCourse()));
+                    CalculateCredit(grade, fac.getCourse()), Percentage);
 
-            for (Student stud : fac.getStudents()) {
-                if (studid.equals(stud.getUsername())) {
+            for (Student stud : fac.getStudents())
+            {
+                if (studid.equals(stud.getUsername()))
+                {
                     stud.getScoreCard().addCourseScore(CS);
+                    calculateOverallGrade(stud);
+                    calculatePercentile(fac);
                     break;
                 }
             }
@@ -612,9 +679,13 @@ public class UserHelper {
         for (Student stud : fac.getStudents()) {
             if (studid.equals(stud.getUsername())) {
                 for (CourseScore C : stud.getScoreCard().getCourseScores()) {
-                    if (C.getCourse() == fac.getCourse()) {
+                    if (C.getCourse() == fac.getCourse())
+                    {
                         C.setObtainedMarks(obtainedMarks);
                         C.setGrade(grade);
+                        C.setPercentage(Percentage);
+                        calculateOverallGrade(stud);
+                        calculatePercentile(fac);
                         break;
                     }
                 }
@@ -712,7 +783,8 @@ public class UserHelper {
 
     }
 
-    void ViewStudentDetails(Student stud) {
+    void ViewStudentDetails(Student stud)
+    {
         System.out.print("\033[H\033[2J");
         System.out.flush();
 
@@ -729,13 +801,20 @@ public class UserHelper {
         System.out.println("    Courses    ");
         System.out.println("===============");
 
-        if (stud.getCourses().size() > 0) {
+        calculateOverallGrade(stud);
+
+        if (stud.getCourses().size() > 0)
+        {
             System.out.println("Course Id\tCourse Name\tTotal Credits");
-            for (Course course : stud.getCourses()) {
+            for (Course course : stud.getCourses())
+            {
                 System.out.println(course.getCourseId() + "\t\t" + course.getCourseName() + "\t" + course.getCredits());
             }
-        } else {
+        }
+        else
+        {
             System.out.println("Student Is Not Registered In Any Courses...");
         }
+        System.out.println("Percentile : " + stud.getScoreCard().getPercentile());
     }
 }

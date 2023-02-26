@@ -3,8 +3,10 @@ import java.util.ArrayList;
 public class ScoreCard {
     private Student student;
     private ArrayList<CourseScore> courseScores;
-    private double overallGrade;
+    private char overallGrade;
     private double percentile;
+
+    private float overallpercentage;
 
     public ScoreCard(Student student) {
         this.student = student;
@@ -19,6 +21,14 @@ public class ScoreCard {
         courseScores.remove(courseScore);
     }
 
+    public float getOverallpercentage() {
+        return overallpercentage;
+    }
+
+    public void setOverallpercentage(float overallpercentage) {
+        this.overallpercentage = overallpercentage;
+    }
+
     public ArrayList<CourseScore> getCourseScores() {
         return courseScores;
     }
@@ -27,11 +37,11 @@ public class ScoreCard {
         this.courseScores = courseScores;
     }
 
-    public double getOverallGrade() {
+    public char getOverallGrade() {
         return overallGrade;
     }
 
-    public void setOverallGrade(double overallGrade) {
+    public void setOverallGrade(char overallGrade) {
         this.overallGrade = overallGrade;
     }
 
