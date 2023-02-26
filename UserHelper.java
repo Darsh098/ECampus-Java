@@ -234,6 +234,8 @@ public class UserHelper {
             if (u != null) {
                 System.out.println("\nWelcome " + u.getFullName());
                 ViewStudentDetails(u);
+                System.out.println("Press Enter to continue");
+                sc.nextLine();
             } else {
                 System.out.println("\nIncorrect Password");
                 while (true) {
@@ -397,9 +399,9 @@ public class UserHelper {
             }
             if (i == 0) {
                 System.out.println("No Students Are Left To Be Registered In This Course...");
-                System.out.println("Press Enter Key To Countinue...");
-                sc.nextLine();
-                sc.nextLine();
+                // System.out.println("Press Enter Key To Countinue...");
+                // sc.nextLine();
+                // sc.nextLine();
                 return;
             }
         } else if (studentsList.size() <= 0) {
@@ -436,20 +438,22 @@ public class UserHelper {
         if (fac.getStudents().size() <= 0) {
             System.out.println("No Students Found...");
         } else {
-            System.out.println("Student ID\tStudent Name\tObt. Marks\tTotal Marks\tGrade");
+            System.out.println(
+                    "Student ID\tStudent Name\tObt. Marks\tTotal Marks\tGrade\tAttained Credits\tTotal Credits");
             for (Student stud : fac.getStudents()) {
                 for (CourseScore CS : stud.getScoreCard().getCourseScores()) {
                     if (CS.getCourse().equals(fac.getCourse())) {
                         System.out.print(stud.getUsername() + "\t" + stud.getFullName());
-                        System.out.println("\t" + CS.getObtainedMarks() + "\t" + CS.getCourse().getTotalMarks() + "\t"
-                                + CS.getGrade());
+                        System.out.println("\t\t" + CS.getObtainedMarks() + "\t\t" + CS.getCourse().getTotalMarks()
+                                + "\t\t" + CS.getGrade() + "\t" + CS.getAttainedCredits() + "\t\t\t"
+                                + CS.getCourse().getCredits());
                     }
                 }
             }
         }
-        System.out.println("Press Enter To Continue...");
-        sc.nextLine();
-        sc.nextLine();
+        // System.out.println("Press Enter To Continue...");
+        // sc.nextLine();
+        // sc.nextLine();
     }
 
     void DisplayStudents(Faculty fac) {
@@ -464,9 +468,9 @@ public class UserHelper {
             System.out.println("---------------------------");
         }
 
-        System.out.println("Press Enter To Continue...");
-        sc.nextLine();
-        sc.nextLine();
+        // System.out.println("Press Enter To Continue...");
+        // sc.nextLine();
+        // sc.nextLine();
     }
 
     char CalculateGrade(float Percentage, Course course) {
@@ -493,7 +497,12 @@ public class UserHelper {
             return course.getCredits();
     }
 
-    void ViewStudetsWithMarks(Faculty fac) {
+    void calculatePercentile(Faculty fac) {
+        ArrayList<Student> student = fac.getStudents();
+
+    }
+
+    void ViewStudetsWithoutMarks(Faculty fac) {
         System.out.println("\n===============");
         System.out.println("Student Details");
         System.out.println("===============");
@@ -537,7 +546,7 @@ public class UserHelper {
         while (true) {
             System.out.print("\033[H\033[2J");
             System.out.flush();
-            ViewStudetsWithMarks(fac);
+            ViewStudetsWithoutMarks(fac);
             System.out.println("Enter 0 To Stop...\n");
 
             sc.nextLine();
@@ -574,6 +583,69 @@ public class UserHelper {
         }
     }
 
+    void UpdateStudentMarks(Faculty fac) {
+        ViewStudentMarks(fac);
+
+        String studid;
+        int obtainedMarks;
+
+        sc.nextLine();
+        System.out.println("Enter Student Id - ");
+        studid = sc.nextLine();
+
+        while (true) {
+            System.out.println("Enter Obtained Marks : ");
+            obtainedMarks = sc.nextInt();
+            if (obtainedMarks < 0) {
+                System.out.println("Obtained Marks Can't Be Less Than 0...");
+                continue;
+            } else if (obtainedMarks > fac.getCourse().getTotalMarks()) {
+                System.out.println("Obtained Marks Can't Be Greater Than Total Marks...");
+                continue;
+            } else
+                break;
+        }
+        float Percentage = (obtainedMarks * 100) / (float) (fac.getCourse().getTotalMarks());
+
+        char grade = CalculateGrade(Percentage, fac.getCourse());
+
+        for (Student stud : fac.getStudents()) {
+            if (studid.equals(stud.getUsername())) {
+                for (CourseScore C : stud.getScoreCard().getCourseScores()) {
+                    if (C.getCourse() == fac.getCourse()) {
+                        C.setObtainedMarks(obtainedMarks);
+                        C.setGrade(grade);
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    void DeleteStudent(Faculty fac) {
+        DisplayStudents(fac);
+        String studid;
+
+        sc.nextLine();
+        System.out.println("Enter Student Id - ");
+        studid = sc.nextLine();
+
+        for (Student stud : fac.getStudents()) {
+            if (studid.equals(stud.getUsername())) {
+                stud.removeCourse(fac.getCourse());
+                for (CourseScore C : stud.getScoreCard().getCourseScores()) {
+                    if (C.getCourse() == fac.getCourse()) {
+                        stud.getScoreCard().removeCourseScore(C);
+                        break;
+                    }
+                }
+                fac.removeStudent(stud);
+                break;
+            }
+        }
+    }
+
     void FacultyMenu(Faculty fac) {
         int choice;
 
@@ -597,21 +669,38 @@ public class UserHelper {
             switch (choice) {
                 case 1:
                     AddStudentMarks(fac);
+                    System.out.println("Press Enter Key To Countinue...");
+                    sc.nextLine();
                     break;
                 case 2:
                     ViewStudentMarks(fac);
+                    System.out.println("Press Enter Key To Countinue...");
+                    sc.nextLine();
+                    sc.nextLine();
                     break;
                 case 3:
-                    // ViewStudentMarks();
+                    UpdateStudentMarks(fac);
+                    System.out.println("Press Enter Key To Countinue...");
+                    sc.nextLine();
+                    sc.nextLine();
                     break;
                 case 4:
                     CourseRegistration(fac);
+                    System.out.println("Press Enter Key To Countinue...");
+                    sc.nextLine();
+                    sc.nextLine();
                     break;
                 case 5:
-                    // ViewStudentMarks();
+                    DeleteStudent(fac);
+                    System.out.println("Press Enter Key To Countinue...");
+                    sc.nextLine();
+                    sc.nextLine();
                     break;
                 case 6:
                     DisplayStudents(fac);
+                    System.out.println("Press Enter Key To Countinue...");
+                    sc.nextLine();
+                    sc.nextLine();
                     break;
                 case 0:
                     return;
@@ -627,23 +716,23 @@ public class UserHelper {
         System.out.print("\033[H\033[2J");
         System.out.flush();
 
+        System.out.println("\n================");
+        System.out.println("   Score Card   ");
+        System.out.println("================");
+
+        System.out.println("\n--------------------------");
+        System.out.println("Student Id : " + stud.getUsername());
+        System.out.println("Student Name : " + stud.getFullName());
+        System.out.println("--------------------------");
+
         System.out.println("\n===============");
-        System.out.println("Student Details");
+        System.out.println("    Courses    ");
         System.out.println("===============");
 
-        System.out.println("\n------------------------");
-        System.out.println("Student Id\tStudent Name");
-        System.out.println(stud.getUsername() + "\t" + stud.getFullName());
-        System.out.println("------------------------");
-
-        System.out.println("\n=======");
-        System.out.println("Courses");
-        System.out.println("=======");
-
         if (stud.getCourses().size() > 0) {
-            System.out.println("Course Id\tCourse Name");
+            System.out.println("Course Id\tCourse Name\tTotal Credits");
             for (Course course : stud.getCourses()) {
-                System.out.println(course.getCourseId() + "\t\t" + course.getCourseName());
+                System.out.println(course.getCourseId() + "\t\t" + course.getCourseName() + "\t" + course.getCredits());
             }
         } else {
             System.out.println("Student Is Not Registered In Any Courses...");

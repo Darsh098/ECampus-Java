@@ -8,6 +8,7 @@ public class CourseScore {
         this.course = course;
         this.obtainedMarks = obtainedMarks;
         this.grade = grade;
+        this.attainedCredits = attainedCredits;
     }
 
     public Course getCourse() {

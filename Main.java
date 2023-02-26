@@ -8,9 +8,9 @@ public class Main {
         while (true) {
             System.out.print("\033[H\033[2J");
             System.out.flush();
-            System.out.println("\n=============================");
-            System.out.println("********* E Campus *********");
-            System.out.println("=============================");
+            System.out.println("\n============================");
+            System.out.println("--------- E Campus ---------");
+            System.out.println("============================");
             System.out.println("1. Registration ");
             System.out.println("2. Sign In ");
             System.out.println("0. Exit");

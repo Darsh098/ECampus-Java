@@ -22,6 +22,10 @@ public class Faculty extends User {
         this.students.add(student);
     }
 
+    public void removeStudent(Student student) {
+        students.remove(student);
+    }
+
     public ArrayList<Student> getStudents() {
         return students;
     }

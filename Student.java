@@ -14,6 +14,10 @@ public class Student extends User {
         this.courses.add(course);
     }
 
+    public void removeCourse(Course course) {
+        courses.remove(course);
+    }
+
     public ScoreCard getScoreCard() {
         return scoreCard;
     }
