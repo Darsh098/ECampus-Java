@@ -6,6 +6,8 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         UserHelper obj = new UserHelper();
         while (true) {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
             System.out.println("\n=============================");
             System.out.println("********* E Campus *********");
             System.out.println("=============================");

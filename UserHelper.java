@@ -1,4 +1,3 @@
-import java.io.Console;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Pattern;
@@ -18,10 +17,15 @@ public class UserHelper {
         System.out.println("============");
         System.out.println("1. Faculty");
         System.out.println("2. Student");
+        System.out.println("0. Home");
+
         System.out.println("Enter Your Choice : ");
         choice = sc.nextInt();
 
-        if (choice < 1 || choice > 2) {
+        if (choice == 0)
+            return;
+
+        if (choice < 0 || choice > 2) {
             RegisterUser();
             return;
         }
@@ -43,11 +47,30 @@ public class UserHelper {
 
         // While Loop For Username
         while (true) {
-            if (choice == 1)
+            if (choice == 1) {
                 System.out.println("\nEnter Your Username - ");
-            else
+            } else {
                 System.out.println("\nEnter Your Student Id - ");
+            }
             username = sc.nextLine();
+            if (choice == 2) {
+                if (!Pattern.matches("[0-9]{9}", username)) {
+                    System.out.println("Student Id Is Not Valid...");
+                    continue;
+                }
+
+                boolean isStudIdAvailable = false;
+                for (Student stud : studentsList) {
+                    if (username.equals(stud.getUsername())) {
+                        isStudIdAvailable = true;
+                        break;
+                    }
+                }
+                if (isStudIdAvailable) {
+                    System.out.println("Student Id Already Exists...");
+                    continue;
+                }
+            }
             if (username.length() == 0) {
                 System.out.println("Username Cannot Be An Empty Field.");
             } else {
@@ -124,10 +147,14 @@ public class UserHelper {
         System.out.println("=======");
         System.out.println("1. Faculty");
         System.out.println("2. Student");
+        System.out.println("0. Home");
         System.out.println("Enter Your Choice : ");
         choice = sc.nextInt();
 
-        if (choice < 1 || choice > 2) {
+        if (choice == 0)
+            return;
+
+        if (choice < 0 || choice > 2) {
             SignIn();
             return;
         }
@@ -352,9 +379,32 @@ public class UserHelper {
         System.out.println("List Of Students Registered In System");
         System.out.println("=====================================");
 
-        System.out.println("Student ID\t \tStudent Name\n");
-        for (Student stud : studentsList) {
-            System.out.println(stud.getUsername() + "\t-\t" + stud.getFullName());
+        if (studentsList.size() > 0) {
+            System.out.println("Student ID\t \tStudent Name\n");
+            int i = 0;
+            for (Student stud : studentsList) {
+                boolean isRegistered = false;
+                for (Course CS : stud.getCourses()) {
+                    if (CS == fac.getCourse()) {
+                        isRegistered = true;
+                        break;
+                    }
+                }
+                if (!isRegistered) {
+                    i++;
+                    System.out.println(stud.getUsername() + "\t-\t" + stud.getFullName());
+                }
+            }
+            if (i == 0) {
+                System.out.println("No Students Are Left To Be Registered In This Course...");
+                System.out.println("Press Enter Key To Countinue...");
+                sc.nextLine();
+                sc.nextLine();
+                return;
+            }
+        } else if (studentsList.size() <= 0) {
+            System.out.println("No Students Are Registered...");
+            return;
         }
 
         System.out.println("\nEnter Student ID You Want To Register : ");
@@ -368,27 +418,38 @@ public class UserHelper {
             if (studentid == 0)
                 break;
 
+            boolean flag = false;
             for (Student stud : studentsList) {
                 if (stud.getUsername().equals(Long.toString(studentid))) {
+                    flag = true;
                     stud.addCourse(fac.getCourse());
                     fac.addStudent(stud);
                     break;
                 }
             }
+            if (!flag)
+                System.out.println("Student Not Found...");
         }
     }
 
     void ViewStudentMarks(Faculty fac) {
-        System.out.println("Student ID\tStudent Name\tObt. Marks\tTotal Marks\tGrade");
-        for (Student stud : fac.getStudents()) {
-            for (CourseScore CS : stud.getScoreCard().getCourseScores()) {
-                if (CS.getCourse().equals(fac.getCourse())) {
-                    System.out.print(stud.getUsername() + "\t" + stud.getFullName());
-                    System.out.println("\t" + CS.getObtainedMarks() + "\t" + CS.getCourse().getTotalMarks() + "\t"
-                            + CS.getGrade());
+        if (fac.getStudents().size() <= 0) {
+            System.out.println("No Students Found...");
+        } else {
+            System.out.println("Student ID\tStudent Name\tObt. Marks\tTotal Marks\tGrade");
+            for (Student stud : fac.getStudents()) {
+                for (CourseScore CS : stud.getScoreCard().getCourseScores()) {
+                    if (CS.getCourse().equals(fac.getCourse())) {
+                        System.out.print(stud.getUsername() + "\t" + stud.getFullName());
+                        System.out.println("\t" + CS.getObtainedMarks() + "\t" + CS.getCourse().getTotalMarks() + "\t"
+                                + CS.getGrade());
+                    }
                 }
             }
         }
+        System.out.println("Press Enter To Continue...");
+        sc.nextLine();
+        sc.nextLine();
     }
 
     void DisplayStudents(Faculty fac) {
@@ -402,6 +463,10 @@ public class UserHelper {
             System.out.println(stud.getUsername() + "\t" + stud.getFullName());
             System.out.println("---------------------------");
         }
+
+        System.out.println("Press Enter To Continue...");
+        sc.nextLine();
+        sc.nextLine();
     }
 
     char CalculateGrade(float Percentage, Course course) {
@@ -415,7 +480,7 @@ public class UserHelper {
             return 'A';
         else if (Percentage <= gradeA && Percentage > gradeB)
             return 'B';
-        else if (Percentage <= gradeB && Percentage > gradeC)
+        else if (Percentage <= gradeB && Percentage >= gradeC)
             return 'C';
         else
             return 'F';
@@ -428,29 +493,83 @@ public class UserHelper {
             return course.getCredits();
     }
 
-    void AddStudentMarks(Faculty fac) {
-        DisplayStudents(fac);
+    void ViewStudetsWithMarks(Faculty fac) {
+        System.out.println("\n===============");
+        System.out.println("Student Details");
+        System.out.println("===============");
 
+        if (fac.getStudents().size() <= 0) {
+            System.out.println("No Students Are Registered Currently...");
+            return;
+        }
+
+        System.out.println("\n---------------------------");
+        System.out.println("Student Id\tStudent Name");
+        System.out.println("---------------------------");
+
+        int i = 0;
+        for (Student stud : fac.getStudents()) {
+            boolean isMarksExist = false;
+            for (CourseScore CS : stud.getScoreCard().getCourseScores()) {
+                if (CS.getCourse() == fac.getCourse()) {
+                    isMarksExist = true;
+                    break;
+                }
+            }
+            if (!isMarksExist) {
+                i++;
+                System.out.println(stud.getUsername() + "\t" + stud.getFullName());
+                System.out.println("---------------------------");
+            }
+        }
+        if (i == 0) {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+            System.out.println("No Student's Marks Are Left To Be Added...");
+        }
+
+    }
+
+    void AddStudentMarks(Faculty fac) {
         String studid;
         int obtainedMarks;
 
-        sc.nextLine();
-        System.out.println("Enter Student Id - ");
-        studid = sc.nextLine();
+        while (true) {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+            ViewStudetsWithMarks(fac);
+            System.out.println("Enter 0 To Stop...\n");
 
-        System.out.println("Enter Obtained Marks : ");
-        obtainedMarks = sc.nextInt();
+            sc.nextLine();
+            System.out.println("Enter Student Id - ");
+            studid = sc.nextLine();
 
-        float Percentage = (obtainedMarks * 100) / (float) (fac.getCourse().getTotalMarks());
+            if (studid.equals("0"))
+                return;
 
-        char grade = CalculateGrade(Percentage, fac.getCourse());
-        CourseScore CS = new CourseScore(fac.getCourse(), obtainedMarks, grade,
-                CalculateCredit(grade, fac.getCourse()));
+            while (true) {
+                System.out.println("Enter Obtained Marks : ");
+                obtainedMarks = sc.nextInt();
+                if (obtainedMarks < 0) {
+                    System.out.println("Obtained Marks Can't Be Less Than 0...");
+                    continue;
+                } else if (obtainedMarks > fac.getCourse().getTotalMarks()) {
+                    System.out.println("Obtained Marks Can't Be Greater Than Total Marks...");
+                    continue;
+                } else
+                    break;
+            }
+            float Percentage = (obtainedMarks * 100) / (float) (fac.getCourse().getTotalMarks());
 
-        for (Student stud : fac.getStudents()) {
-            if (studid.equals(stud.getUsername())) {
-                stud.getScoreCard().addCourseScore(CS);
-                break;
+            char grade = CalculateGrade(Percentage, fac.getCourse());
+            CourseScore CS = new CourseScore(fac.getCourse(), obtainedMarks, grade,
+                    CalculateCredit(grade, fac.getCourse()));
+
+            for (Student stud : fac.getStudents()) {
+                if (studid.equals(stud.getUsername())) {
+                    stud.getScoreCard().addCourseScore(CS);
+                    break;
+                }
             }
         }
     }
@@ -459,6 +578,8 @@ public class UserHelper {
         int choice;
 
         while (true) {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
             System.out.println("\n==============");
             System.out.println("Faculty - Menu");
             System.out.println("==============");
@@ -484,7 +605,7 @@ public class UserHelper {
                     // ViewStudentMarks();
                     break;
                 case 4:
-                    // ViewStudentMarks();
+                    CourseRegistration(fac);
                     break;
                 case 5:
                     // ViewStudentMarks();
